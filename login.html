@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — LifeDrop</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" fill="#c41e3a" stroke="#c41e3a"/></svg>
+      LifeDrop
+    </a>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="community.html">Community</a>
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <a class="nav-link" href="donor-history.html">Donor History</a>
+      <a class="nav-link" href="patient.html">Patients</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <a href="login.html" class="btn btn-outline btn-sm">Sign in</a>
+  </div>
+</header>
+
+<main class="wrap section" style="max-width: 480px;">
+  <div class="card panel-narrow">
+
+    <div class="tabs" style="display:flex; gap:6px; margin-bottom:24px; background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:4px;">
+      <button type="button" id="tabSignIn" class="tab-btn active" style="flex:1;">Sign in</button>
+      <button type="button" id="tabRegister" class="tab-btn">Create account</button>
+    </div>
+
+    <div id="banner"></div>
+
+    <!-- SIGN IN -->
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" required placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+        <div style="text-align:right; margin-top:6px;">
+          <a href="forgot-password.html" style="font-size:13px; color:var(--clay);">Forgot password?</a>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      <div class="field-hint" style="margin-top: 16px; text-align: center;">
+        Demo admin: <span class="mono">admin@lifedrop.local</span> / <span class="mono">Admin@2026</span>
+      </div>
+    </form>
+
+    <!-- REGISTER -->
+    <form id="registerForm" novalidate style="display:none;">
+      <div class="field">
+        <label for="regName">Full name</label>
+        <input type="text" id="regName" required placeholder="Jordan Rivera">
+      </div>
+      <div class="field">
+        <label for="regEmail">Email address</label>
+        <input type="email" id="regEmail" required placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="regPassword">Password</label>
+        <input type="password" id="regPassword" required placeholder="At least 8 characters" autocomplete="new-password">
+        <div id="strengthMeter" style="margin-top:8px; display:none;">
+          <div style="height:5px; background:var(--line); border-radius:3px; overflow:hidden;">
+            <div id="strengthBar" style="height:100%; width:0%; transition: width .2s, background .2s;"></div>
+          </div>
+          <div id="strengthLabel" style="font-size:12.5px; margin-top:5px; font-weight:600;"></div>
+          <ul id="strengthChecklist" style="font-size:12px; color:var(--clay); margin:6px 0 0; padding-left:18px; line-height:1.7;"></ul>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+
+    <div class="field-hint" style="margin-top: 20px; text-align: center;">
+      Local demo only — passwords are salted &amp; hashed (SHA-256) before storage, and repeated failed logins are temporarily locked out. No data ever leaves your browser.
+    </div>
+  </div>
+</main>
+
+<footer class="footer wrap">
+  <span>© 2026 LifeDrop. A community blood donation network.</span>
+  <span>Built for demonstration — not for real medical use.</span>
+</footer>
+
+<style>
+  .tab-btn {
+    border: none; background: transparent; padding: 9px 0; border-radius: 999px;
+    font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--clay); cursor: pointer;
+  }
+  .tab-btn.active { background: var(--ink); color: var(--paper); }
+</style>
+
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/chatbot-data.js"></script>
+<script src="js/chatbot-widget.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  const banner = document.getElementById('banner');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const tabSignIn = document.getElementById('tabSignIn');
+  const tabRegister = document.getElementById('tabRegister');
+
+  LifeDropAuth.seedDemoAdmin();
+
+  function showTab(which) {
+    banner.innerHTML = '';
+    if (which === 'signin') {
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+      tabSignIn.classList.add('active');
+      tabRegister.classList.remove('active');
+    } else {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
+      tabSignIn.classList.remove('active');
+      tabRegister.classList.add('active');
+    }
+  }
+  tabSignIn.addEventListener('click', () => showTab('signin'));
+  tabRegister.addEventListener('click', () => showTab('register'));
+
+  const session = LifeDropAuth.getSession();
+  if (session) {
+    banner.innerHTML = `<div class="form-banner success">Signed in as ${escapeHtml(session.email)}. <a href="index.html" style="font-weight:600;">Go home</a></div>`;
+  }
+
+  // ---- Sign in ----
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const btn = loginForm.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      const s = await LifeDropAuth.login(email, password);
+      banner.innerHTML = `<div class="form-banner success">Welcome back, ${escapeHtml(s.fullName)}. Redirecting…</div>`;
+      setTimeout(() => { window.location.href = s.role === 'admin' ? 'admin.html' : 'index.html'; }, 700);
+    } catch (err) {
+      banner.innerHTML = `<div class="form-banner error">${escapeHtml(err.message)}</div>`;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign in';
+    }
+  });
+
+  // ---- Password strength meter ----
+  const pwInput = document.getElementById('regPassword');
+  const meter = document.getElementById('strengthMeter');
+  const bar = document.getElementById('strengthBar');
+  const label = document.getElementById('strengthLabel');
+  const checklist = document.getElementById('strengthChecklist');
+
+  const CHECK_LABELS = {
+    length: 'At least 8 characters',
+    upper: 'An uppercase letter',
+    lower: 'A lowercase letter',
+    number: 'A number',
+    symbol: 'A symbol (!@#$…)',
+  };
+  const COLORS = { 1: 'var(--crimson)', 2: 'var(--amber)', 3: 'var(--sage)' };
+
+  pwInput.addEventListener('input', () => {
+    const pw = pwInput.value;
+    if (!pw) { meter.style.display = 'none'; return; }
+    meter.style.display = 'block';
+    const s = LifeDropAuth.checkPasswordStrength(pw);
+    bar.style.width = `${(s.passed / 5) * 100}%`;
+    bar.style.background = COLORS[s.level];
+    label.textContent = `${s.label} password`;
+    label.style.color = COLORS[s.level];
+    checklist.innerHTML = Object.entries(CHECK_LABELS)
+      .map(([key, text]) => `<li style="color:${s.checks[key] ? 'var(--sage)' : 'var(--clay)'}">${s.checks[key] ? '✓' : '○'} ${text}</li>`)
+      .join('');
+  });
+
+  // ---- Register ----
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    const btn = registerForm.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    try {
+      await LifeDropAuth.register(email, password, name);
+      const s = await LifeDropAuth.login(email, password);
+      banner.innerHTML = `<div class="form-banner success">Account created. Welcome, ${escapeHtml(s.fullName)}!</div>`;
+      setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    } catch (err) {
+      banner.innerHTML = `<div class="form-banner error">${escapeHtml(err.message)}</div>`;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create account';
+    }
+  });
+</script>
+<script>
+  const themeToggleBtn = document.getElementById('themeToggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => LifeDropTheme.toggle());
+  }
+</script>
+</body>
+</html>

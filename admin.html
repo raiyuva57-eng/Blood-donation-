@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin & Hospital Management — LifeDrop</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" fill="#c41e3a" stroke="#c41e3a"/></svg>
+      LifeDrop
+    </a>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="community.html">Community</a>
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <a class="nav-link" href="donor-history.html">Donor History</a>
+      <a class="nav-link" href="patient.html">Patients</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <span id="navUser"></span>
+  </div>
+</header>
+
+<main class="wrap section" id="gate">
+  <!-- content injected after auth check -->
+</main>
+
+<footer class="footer wrap">
+  <span>© 2026 LifeDrop. A community blood donation network.</span>
+  <span><a href="donor-history.html">Donor history</a> · <a href="patient.html">Patients</a></span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/chatbot-data.js"></script>
+<script src="js/chatbot-widget.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  const gate = document.getElementById('gate');
+  const navUser = document.getElementById('navUser');
+  const session = LifeDropAuth.getSession();
+
+  if (!session) {
+    gate.innerHTML = `
+      <div class="empty-state card">
+        <h3>Sign in required</h3>
+        <p>The admin dashboard is only visible to signed-in accounts.</p>
+        <a href="login.html" class="btn btn-primary">Sign in</a>
+      </div>`;
+  } else if (session.role !== 'admin') {
+    gate.innerHTML = `
+      <div class="empty-state card">
+        <h3>Admin access required</h3>
+        <p>Signed in as ${escapeHtml(session.email)}, which doesn't have admin permissions.</p>
+        <a href="index.html" class="btn btn-outline">Back home</a>
+      </div>`;
+  } else {
+    navUser.innerHTML = `<span style="font-size:13px;color:var(--clay);margin-right:10px;">${escapeHtml(session.fullName)}</span><button class="btn btn-ghost btn-sm" id="logoutBtn">Sign out</button>`;
+    renderDashboard();
+  }
+
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'logoutBtn') {
+      LifeDropAuth.logout();
+      window.location.href = 'login.html';
+    }
+  });
+
+  function renderDashboard() {
+    const donors = LifeDropData.getDonors();
+    const patients = LifeDropData.getPatients();
+    const critical = patients.filter((p) => p.urgency === 'critical').length;
+    const urgent = patients.filter((p) => p.urgency === 'urgent').length;
+    const totalUnits = donors.reduce((sum, d) => sum + (Number(d.units) || 0), 0);
+
+    const byType = {};
+    donors.forEach((d) => { byType[d.bloodType] = (byType[d.bloodType] || 0) + 1; });
+
+    gate.innerHTML = `
+      <div class="hero-eyebrow">Hospital management</div>
+      <h1 style="font-size: 32px;">Admin dashboard</h1>
+      <p class="hero-sub">Live overview of donor supply and patient demand across the network.</p>
+
+      <div class="grid-3 section-tight">
+        <div class="card">
+          <div class="eyebrow">Total donations</div>
+          <div style="font-family:var(--font-display); font-size:34px; font-weight:600;">${donors.length}</div>
+          <div class="field-hint" style="margin-top:2px;">${totalUnits} units collected</div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Patient needs open</div>
+          <div style="font-family:var(--font-display); font-size:34px; font-weight:600;">${patients.length}</div>
+          <div class="field-hint" style="margin-top:2px;">${critical} critical · ${urgent} urgent</div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Blood types on file</div>
+          <div style="font-family:var(--font-display); font-size:34px; font-weight:600;">${Object.keys(byType).length}</div>
+          <div class="field-hint" style="margin-top:2px;">across all donor records</div>
+        </div>
+      </div>
+
+      <div class="card section-tight">
+        <h3>Supply by blood type</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          ${['O+','O-','A+','A-','B+','B-','AB+','AB-'].map((t) => `
+            <div style="display:flex; align-items:center; gap:8px; padding:8px 14px; background:var(--paper); border:1px solid var(--line); border-radius:10px;">
+              ${bloodTypeBadge(t)}
+              <span class="mono" style="font-size:14px; font-weight:600;">${byType[t] || 0}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="section-tight">
+        <div class="flex-between">
+          <h3 style="margin:0;">Critical &amp; urgent patient needs</h3>
+        </div>
+        <div class="card" style="margin-top:12px;">
+          ${renderPatientTable(patients.filter((p) => p.urgency !== 'normal'))}
+        </div>
+      </div>
+
+      <div class="section-tight">
+        <h3>Recent donations</h3>
+        <div class="card" style="margin-top:12px;">
+          ${renderDonorTable(donors.slice(0, 8))}
+        </div>
+      </div>
+
+      <div class="section-tight">
+        <h3>All patient needs</h3>
+        <div class="card" style="margin-top:12px;">
+          ${renderPatientTable(patients)}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderDonorTable(donors) {
+    if (!donors.length) return `<div class="empty-state"><h3>No donation records yet</h3></div>`;
+    return `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Type</th><th>Date</th><th>Units</th><th>Location</th><th></th></tr></thead>
+          <tbody>
+            ${donors.map((d) => `
+              <tr>
+                <td>${escapeHtml(d.name)}</td>
+                <td>${bloodTypeBadge(d.bloodType)}</td>
+                <td>${formatDate(d.date)}</td>
+                <td>${d.units ?? 1}</td>
+                <td>${escapeHtml(d.location || '—')}</td>
+                <td><button class="btn btn-ghost btn-sm" onclick="adminRemoveDonor('${d.id}')">Remove</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  function renderPatientTable(patients) {
+    if (!patients.length) return `<div class="empty-state"><h3>Nothing here</h3></div>`;
+    const urgencyChip = (level) => {
+      const map = { normal: ['var(--sage-wash)','var(--sage)','Normal'], urgent: ['var(--amber-wash)','var(--amber)','Urgent'], critical: ['var(--crimson-wash)','var(--crimson-deep)','Critical'] };
+      const [bg, color, label] = map[level] || map.normal;
+      const heart = level === 'critical'
+        ? `<span class="emergency-heart"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-4.9-9.3-8.6C.6 9.2 1.6 5.3 5 4.1c2-.7 4 .1 5 1.8 1-1.7 3-2.5 5-1.8 3.4 1.2 4.4 5.1 2.3 8.3C18.7 16.1 12 21 12 21z"/></svg></span>`
+        : '';
+      return `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:${bg};color:${color};font-size:12.5px;font-weight:600;">${heart}${label}</span>`;
+    };
+    return `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Patient</th><th>Type</th><th>Units</th><th>Urgency</th><th>Hospital</th><th>Contact</th><th></th></tr></thead>
+          <tbody>
+            ${patients.map((p) => `
+              <tr>
+                <td>${escapeHtml(p.name)}</td>
+                <td>${bloodTypeBadge(p.bloodType)}</td>
+                <td>${p.units ?? 1}</td>
+                <td>${urgencyChip(p.urgency)}</td>
+                <td>${escapeHtml(p.hospital || '—')}</td>
+                <td class="mono" style="font-size:13px;">${escapeHtml(p.phone || '—')}</td>
+                <td><button class="btn btn-ghost btn-sm" onclick="adminRemovePatient('${p.id}')">Remove</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  function adminRemoveDonor(id) {
+    if (!confirm('Remove this donation record?')) return;
+    LifeDropData.deleteDonorRecord(id);
+    renderDashboard();
+  }
+  function adminRemovePatient(id) {
+    if (!confirm('Remove this patient record?')) return;
+    LifeDropData.deletePatient(id);
+    renderDashboard();
+  }
+</script>
+<script>
+  const themeToggleBtn = document.getElementById('themeToggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => LifeDropTheme.toggle());
+  }
+</script>
+</body>
+</html>

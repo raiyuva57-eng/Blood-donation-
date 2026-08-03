@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — LifeDrop</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" fill="#c41e3a" stroke="#c41e3a"/></svg>
+      LifeDrop
+    </a>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="community.html">Community</a>
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <a class="nav-link" href="donor-history.html">Donor History</a>
+      <a class="nav-link" href="patient.html">Patients</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">Sign in</a></span>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div class="hero-eyebrow">We're listening</div>
+  <h1 style="font-size: 38px;">Get in touch</h1>
+  <p class="hero-sub">Questions about donating, a patient's request, or how LifeDrop works — send a message and we'll follow up.</p>
+
+  <div class="grid-2 section-tight" style="align-items: start;">
+    <div class="card">
+      <div id="contactBanner"></div>
+      <form id="contactForm" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input type="text" id="name" required placeholder="Jordan Rivera">
+          </div>
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" required placeholder="(555) 123-4567" pattern="[0-9\-\+\(\)\s]{7,20}">
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" required placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="subject">Subject</label>
+          <select id="subject">
+            <option>General question</option>
+            <option>I want to donate</option>
+            <option>I need blood for a patient</option>
+            <option>Report a problem</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" rows="5" required placeholder="How can we help?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send message</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px;">Call us</h3>
+        <p class="mono" style="font-size: 18px; color: var(--ink); margin-bottom: 4px;">(555) 010-4357</p>
+        <p style="font-size: 13.5px;">Mon–Fri, 9am–6pm</p>
+      </div>
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px;">Email us</h3>
+        <p class="mono" style="font-size: 16px; color: var(--ink);">hello@lifedrop.example</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size: 16px;">Emergency need?</h3>
+        <p style="font-size: 13.5px; margin: 0;">For urgent patient blood needs, use the <a href="patient.html" style="color: var(--crimson-deep); font-weight: 600;">patient registration form</a> and mark it urgent — don't wait on a reply here.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer wrap">
+  <span>© 2026 LifeDrop. A community blood donation network.</span>
+  <span><a href="about.html">About</a></span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="js/email-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/chatbot-data.js"></script>
+<script src="js/chatbot-widget.js"></script>
+<script>
+  (function() {
+    const session = LifeDropAuth.getSession();
+    const slot = document.getElementById('navAuth');
+    if (session && slot) {
+      slot.innerHTML = '<span style="font-size:13px;color:var(--clay);margin-right:8px;">' + session.fullName.split(' ')[0] + '</span><button class="btn btn-ghost btn-sm" onclick="LifeDropAuth.logout(); window.location.reload();">Sign out</button>';
+    }
+  })();
+</script>
+<script>
+  // Initialize EmailJS if key is available
+  if (window.LifeDropEmailConfig && window.LifeDropEmailConfig.publicKey && typeof emailjs !== 'undefined') {
+    emailjs.init({ publicKey: window.LifeDropEmailConfig.publicKey });
+  }
+
+  const form = document.getElementById('contactForm');
+  const banner = document.getElementById('contactBanner');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    const messageData = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      subject: document.getElementById('subject').value,
+      message: document.getElementById('message').value.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    let sentViaEmailJS = false;
+
+    // Try sending via EmailJS if configured
+    if (window.LifeDropEmailConfig && window.LifeDropEmailConfig.serviceId && window.LifeDropEmailConfig.templateId) {
+      try {
+        await emailjs.send(
+          window.LifeDropEmailConfig.serviceId,
+          window.LifeDropEmailConfig.templateId,
+          {
+            from_name: messageData.name,
+            from_email: messageData.email,
+            phone_number: messageData.phone,
+            subject: messageData.subject,
+            message: messageData.message
+          }
+        );
+        sentViaEmailJS = true;
+      } catch (error) {
+        console.warn('EmailJS delivery failed, falling back to local storage:', error);
+      }
+    }
+
+    // Save to local storage system so message is never lost
+    if (window.LifeDropData && typeof LifeDropData.addContactMessage === 'function') {
+      LifeDropData.addContactMessage(messageData);
+    }
+
+    // Display confirmation
+    banner.innerHTML = `<div class="form-banner success">Thanks, ${escapeHtml(messageData.name)} — your message has been received! We'll follow up shortly.</div>`;
+    form.reset();
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send message';
+  });
+</script>
+<script>
+  const themeToggleBtn = document.getElementById('themeToggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => LifeDropTheme.toggle());
+  }
+</script>
+</body>
+</html>

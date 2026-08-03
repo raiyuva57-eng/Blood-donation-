@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community — LifeDrop</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" fill="#c41e3a" stroke="#c41e3a"/></svg>
+      LifeDrop
+    </a>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="community.html">Community</a>
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <a class="nav-link" href="donor-history.html">Donor History</a>
+      <a class="nav-link" href="patient.html">Patients</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">Sign in</a></span>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div class="hero-eyebrow reveal">The network</div>
+  <h1 class="reveal reveal-1" style="font-size: 32px;">Community</h1>
+  <p class="hero-sub reveal reveal-2">Recent donations and patient needs from across the LifeDrop network — updated as records are added.</p>
+
+  <!-- Stories bar: most recent donors, ring = "new" within 30 days -->
+  <div class="stories-bar reveal reveal-2" id="storiesBar"></div>
+
+  <div class="grid-2 section-tight" style="align-items: start; gap: 32px;">
+    <!-- Feed -->
+    <div>
+      <h3 class="reveal reveal-3">Latest activity</h3>
+      <div class="feed" id="feed"></div>
+    </div>
+
+    <!-- Sidebar: profile grid summary -->
+    <div class="reveal reveal-3">
+      <div class="card">
+        <h3 style="font-size:16px;">Donor grid</h3>
+        <p class="field-hint" style="margin-bottom:14px;">Every recorded donor, at a glance.</p>
+        <div class="profile-grid" id="profileGrid"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer wrap">
+  <span>© 2026 LifeDrop. A community blood donation network.</span>
+  <span><a href="donor-history.html">Log a donation</a> · <a href="patient.html">Register a need</a></span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/chatbot-data.js"></script>
+<script src="js/chatbot-widget.js"></script>
+<script>
+  (function() {
+    const session = LifeDropAuth.getSession();
+    const slot = document.getElementById('navAuth');
+    if (session && slot) {
+      slot.innerHTML = '<span style="font-size:13px;color:var(--clay);margin-right:8px;">' + session.fullName.split(' ')[0] + '</span><button class="btn btn-ghost btn-sm" onclick="LifeDropAuth.logout(); window.location.reload();">Sign out</button>';
+    }
+  })();
+
+  function initials(name) {
+    return (name || '?').trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  function timeAgo(dateStr) {
+    if (!dateStr) return 'recently';
+    const then = new Date(dateStr).getTime();
+    const days = Math.floor((Date.now() - then) / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return '1 day ago';
+    if (days < 30) return `${days} days ago`;
+    const months = Math.floor(days / 30);
+    return months === 1 ? '1 month ago' : `${months} months ago`;
+  }
+
+  function renderStories() {
+    const donors = LifeDropData.getDonors();
+    const bar = document.getElementById('storiesBar');
+    if (!donors.length) {
+      bar.innerHTML = `<p class="field-hint">No donors yet — be the first to <a href="donor-history.html" style="color:var(--crimson-deep);font-weight:600;">log a donation</a>.</p>`;
+      return;
+    }
+    bar.innerHTML = donors.slice(0, 10).map((d) => {
+      const daysAgo = d.date ? Math.floor((Date.now() - new Date(d.date).getTime()) / 86400000) : 999;
+      const isRecent = daysAgo <= 30;
+      return `
+        <div class="story" title="${escapeHtml(d.name)} · ${escapeHtml(d.bloodType || '')}">
+          <div class="story-ring ${isRecent ? '' : 'story-ring-seen'}">
+            <div class="story-avatar">
+              ${d.photo ? `<img src="${d.photo}" alt="${escapeHtml(d.name)}">` : initials(d.name)}
+            </div>
+          </div>
+          <div class="story-label">${escapeHtml((d.name || '').split(' ')[0])}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderFeed() {
+    const donors = LifeDropData.getDonors();
+    const patients = LifeDropData.getPatients();
+
+    const items = [
+      ...donors.map((d) => ({ type: 'donation', data: d, at: d.date })),
+      ...patients.map((p) => ({ type: 'need', data: p, at: p.createdAt })),
+    ].sort((a, b) => new Date(b.at || 0) - new Date(a.at || 0));
+
+    const feed = document.getElementById('feed');
+    if (!items.length) {
+      feed.innerHTML = `<div class="empty-state card"><h3>Nothing here yet</h3><p>Activity will appear here once donations or patient needs are logged.</p></div>`;
+      return;
+    }
+
+    feed.innerHTML = items.slice(0, 12).map((item, idx) => {
+      if (item.type === 'donation') {
+        const d = item.data;
+        return `
+          <div class="feed-post reveal reveal-${(idx % 4) + 1}">
+            <div class="feed-post-head">
+              <div class="feed-post-avatar">${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : initials(d.name)}</div>
+              <div class="feed-post-meta">
+                <div class="feed-post-name">${escapeHtml(d.name)}</div>
+                <div class="feed-post-time">${timeAgo(d.date)} · Donation</div>
+              </div>
+              ${bloodTypeBadge(d.bloodType)}
+            </div>
+            <div class="feed-post-body">
+              <div style="text-align:center;">
+                <div class="mono" style="font-size:42px;font-weight:700;color:var(--crimson-deep);">${d.units || 1}</div>
+                <div style="font-size:13px;color:var(--ink-soft);">unit${(d.units || 1) > 1 ? 's' : ''} donated</div>
+              </div>
+            </div>
+            <div class="feed-post-caption">
+              <strong>${escapeHtml(d.name)}</strong> donated at ${escapeHtml(d.location || 'a LifeDrop location')}.
+              ${d.notes ? escapeHtml(d.notes) : 'Thank you for helping save lives! 🩸'}
+            </div>
+            <div class="feed-post-actions">
+              <button class="like-btn" data-id="${d.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg> Thank</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Comment</button>
+            </div>
+          </div>
+        `;
+      } else {
+        const p = item.data;
+        const urgencyColor = p.urgency === 'critical' ? 'var(--crimson-wash), var(--crimson-wash)' : p.urgency === 'urgent' ? 'var(--amber-wash), var(--amber-wash)' : 'var(--sage-wash), var(--sage-wash)';
+        return `
+          <div class="feed-post reveal reveal-${(idx % 4) + 1}">
+            <div class="feed-post-head">
+              <div class="feed-post-avatar">${initials(p.name)}</div>
+              <div class="feed-post-meta">
+                <div class="feed-post-name">${escapeHtml(p.name)}</div>
+                <div class="feed-post-time">${timeAgo(p.createdAt)} · Patient need</div>
+              </div>
+              ${bloodTypeBadge(p.bloodType)}
+            </div>
+            <div class="feed-post-body" style="background: linear-gradient(135deg, ${urgencyColor});">
+              <div style="text-align:center;">
+                <div class="mono" style="font-size:42px;font-weight:700;color:var(--crimson-deep);">${p.units || 1}</div>
+                <div style="font-size:13px;color:var(--ink-soft);">unit${(p.units || 1) > 1 ? 's' : ''} needed</div>
+              </div>
+            </div>
+            <div class="feed-post-caption">
+              Blood needed for <strong>${escapeHtml(p.name)}</strong>${p.hospital ? ' at ' + escapeHtml(p.hospital) : ''}.
+              ${p.reason ? escapeHtml(p.reason) : ''}
+            </div>
+            <div class="feed-post-actions">
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg> Can help</button>
+              <a href="patient.html" style="text-decoration:none;"><button style="pointer-events:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg> View details</button></a>
+            </div>
+          </div>
+        `;
+      }
+    }).join('');
+
+    // Wire the "Thank" like buttons with a small toggle animation
+    feed.querySelectorAll('.like-btn').forEach((btn) => {
+      btn.addEventListener('click', () => btn.classList.toggle('liked'));
+    });
+  }
+
+  function renderProfileGrid() {
+    const donors = LifeDropData.getDonors();
+    const grid = document.getElementById('profileGrid');
+    if (!donors.length) {
+      grid.innerHTML = `<p class="field-hint" style="grid-column:1/-1;">No donors yet.</p>`;
+      return;
+    }
+    grid.innerHTML = donors.map((d) => `
+      <div class="profile-grid-item" title="${escapeHtml(d.name)}">
+        ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-family:var(--font-display);font-weight:600;font-size:20px;color:var(--crimson-deep);">${initials(d.name)}</span>`}
+        ${bloodTypeBadge(d.bloodType)}
+      </div>
+    `).join('');
+  }
+
+  renderStories();
+  renderFeed();
+  renderProfileGrid();
+</script>
+<script>
+  const themeToggleBtn = document.getElementById('themeToggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => LifeDropTheme.toggle());
+  }
+</script>
+</body>
+</html>

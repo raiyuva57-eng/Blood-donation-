@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BloodConnect RTM | Real-Time Blood Donation System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/utilities.css" />
+  </head>
+  <body>
+    <div class="app-bg"></div>
+
+    <header class="site-header glass">
+      <div class="container row space-between align-center">
+        <div class="brand row align-center gap-12">
+          <div class="brand-mark">❤</div>
+          <div>
+            <h1>BloodConnect RTM</h1>
+            <p class="muted">Real-time donor, hospital, and blood bank collaboration</p>
+          </div>
+        </div>
+        <nav class="nav row gap-12 align-center">
+          <a href="#hero">Home</a>
+          <a href="#features">Features</a>
+          <a href="#campaigns">Campaigns</a>
+          <a href="#compatibility">Compatibility</a>
+          <button id="openLogin" class="btn btn-dark">Login</button>
+          <button id="openRegister" class="btn btn-primary">Register</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="landingView">
+        <section id="hero" class="hero-section container">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="eyebrow">LIVE BLOOD RESPONSE PLATFORM</span>
+              <h2>Build a complete full-stack blood donation workflow with real-time updates.</h2>
+              <p>
+                This project demo includes donor discovery, urgent requests, inventory tracking, campaign management,
+                appointment scheduling, role-based dashboards, and Socket.IO live notifications.
+              </p>
+              <div class="hero-actions row gap-12 wrap">
+                <button id="heroStart" class="btn btn-primary btn-lg">Start Demo</button>
+                <button id="heroGuest" class="btn btn-soft btn-lg">Explore UI</button>
+              </div>
+              <div class="demo-accounts glass">
+                <h3>Seeded demo accounts</h3>
+                <div class="demo-grid">
+                  <div><strong>Admin:</strong> admin@bloodconnect.local / admin123</div>
+                  <div><strong>Donor:</strong> aarav@bloodconnect.local / donor123</div>
+                  <div><strong>Hospital:</strong> lifecare@bloodconnect.local / hospital123</div>
+                  <div><strong>Blood Bank:</strong> metrobank@bloodconnect.local / bank123</div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-panel glass">
+              <div class="panel-top row space-between align-center">
+                <div>
+                  <span class="pill pill-danger">Critical alert monitor</span>
+                  <h3>Emergency dashboard preview</h3>
+                </div>
+                <span id="presenceBadge" class="badge">0 online</span>
+              </div>
+              <div id="heroStats" class="stats-grid"></div>
+              <div class="live-box">
+                <div class="row space-between align-center mb-12">
+                  <h4>Live activity</h4>
+                  <span class="badge">Auto refresh</span>
+                </div>
+                <div id="liveFeedPreview" class="feed-list compact"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" class="container section-space">
+          <div class="section-head center">
+            <span class="eyebrow">PROJECT MODULES</span>
+            <h2>Production-style UX blocks for a modern blood donation platform</h2>
+            <p>Every module is wired to the API and updates the interface in real time.</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card glass">
+              <span class="icon-box">⚡</span>
+              <h3>Real-time emergency alerts</h3>
+              <p>Create urgent blood requests and instantly notify compatible donors in the same city.</p>
+            </article>
+            <article class="feature-card glass">
+              <span class="icon-box">🧬</span>
+              <h3>Compatibility-based matching</h3>
+              <p>Requests automatically surface compatible and available donor candidates by group and location.</p>
+            </article>
+            <article class="feature-card glass">
+              <span class="icon-box">🏥</span>
+              <h3>Hospital and blood bank workflow</h3>
+              <p>Manage inventory, campaigns, donor appointments, and fulfillment status from one workspace.</p>
+            </article>
+            <article class="feature-card glass">
+              <span class="icon-box">🛡</span>
+              <h3>Role-based access control</h3>
+              <p>Admin, donor, hospital, and blood bank screens adapt automatically after login.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="campaigns" class="container section-space">
+          <div class="section-head row space-between align-end wrap gap-12">
+            <div>
+              <span class="eyebrow">COMMUNITY CAMPAIGNS</span>
+              <h2>Donation drives and volunteer participation</h2>
+            </div>
+            <button id="campaignExplore" class="btn btn-soft">Refresh campaigns</button>
+          </div>
+          <div id="campaignCards" class="cards-grid"></div>
+        </section>
+
+        <section id="compatibility" class="container section-space">
+          <div class="section-head row space-between align-end wrap gap-12">
+            <div>
+              <span class="eyebrow">BLOOD GROUP LOGIC</span>
+              <h2>Compatibility reference and eligibility board</h2>
+            </div>
+          </div>
+          <div class="compatibility-layout">
+            <div class="compat-card glass">
+              <h3>Compatibility Matrix</h3>
+              <div id="compatibilityGrid" class="compatibility-grid"></div>
+            </div>
+            <div class="compat-card glass">
+              <h3>Quick Eligibility Check</h3>
+              <form id="eligibilityForm" class="stack gap-12">
+                <label>
+                  Donor Blood Group
+                  <select name="donorBloodGroup" class="input blood-group-select"></select>
+                </label>
+                <label>
+                  Recipient Blood Group
+                  <select name="recipientBloodGroup" class="input blood-group-select"></select>
+                </label>
+                <button class="btn btn-primary" type="submit">Check Match</button>
+              </form>
+              <div id="eligibilityResult" class="empty-state mt-16">Pick donor and recipient blood groups.</div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="appView" class="hidden">
+        <div class="app-shell">
+          <aside class="sidebar glass">
+            <div class="sidebar-brand">
+              <div class="brand-mark lg">❤</div>
+              <div>
+                <h3>Command Center</h3>
+                <p id="sidebarUserRole" class="muted">Role</p>
+              </div>
+            </div>
+            <div class="profile-card glass-dark">
+              <h4 id="profileName">Guest User</h4>
+              <p id="profileMeta" class="muted">No active session</p>
+              <div class="profile-tags">
+                <span id="profileBlood" class="tag">-</span>
+                <span id="profileCity" class="tag">-</span>
+                <span id="profileStatus" class="tag tag-success">Offline</span>
+              </div>
+            </div>
+            <nav class="sidebar-nav">
+              <button class="nav-btn active" data-tab="overviewTab">Overview</button>
+              <button class="nav-btn" data-tab="donorsTab">Donors</button>
+              <button class="nav-btn" data-tab="requestsTab">Requests</button>
+              <button class="nav-btn" data-tab="appointmentsTab">Appointments</button>
+              <button class="nav-btn" data-tab="inventoryTab">Inventory</button>
+              <button class="nav-btn" data-tab="campaignsTab">Campaigns</button>
+              <button class="nav-btn admin-only" data-tab="adminTab">Admin</button>
+            </nav>
+            <div class="sidebar-actions stack gap-12">
+              <button id="toggleAvailabilityBtn" class="btn btn-soft full donor-only">Toggle Availability</button>
+              <button id="logoutBtn" class="btn btn-danger ghost full">Logout</button>
+            </div>
+          </aside>
+
+          <div class="content-area">
+            <div class="topbar glass row space-between align-center wrap gap-12">
+              <div>
+                <h2 id="pageTitle">Overview Dashboard</h2>
+                <p id="pageSubtitle" class="muted">Monitor donors, requests, and live blood response status.</p>
+              </div>
+              <div class="row gap-12 wrap">
+                <span id="sessionRoleBadge" class="badge">Role</span>
+                <span id="sessionOnlineBadge" class="badge badge-live">Live sync on</span>
+              </div>
+            </div>
+
+            <section id="overviewTab" class="tab-panel active">
+              <div id="dashboardStats" class="stats-grid large"></div>
+              <div class="dashboard-grid-2 mt-24">
+                <div class="panel glass">
+                  <div class="row space-between align-center mb-12">
+                    <h3>Recent Activity</h3>
+                    <button id="refreshDashboardBtn" class="btn btn-soft">Refresh</button>
+                  </div>
+                  <div id="activityList" class="feed-list"></div>
+                </div>
+                <div class="panel glass">
+                  <div class="row space-between align-center mb-12">
+                    <h3>Notifications</h3>
+                    <button id="markAllReadBtn" class="btn btn-soft">Mark viewed</button>
+                  </div>
+                  <div id="notificationList" class="feed-list"></div>
+                </div>
+              </div>
+              <div class="dashboard-grid-2 mt-24">
+                <div class="panel glass">
+                  <h3 class="mb-12">Live donor matches</h3>
+                  <div id="matchBoard" class="match-board"></div>
+                </div>
+                <div class="panel glass">
+                  <h3 class="mb-12">Open campaigns</h3>
+                  <div id="campaignBoard" class="cards-grid compact"></div>
+                </div>
+              </div>
+            </section>
+
+            <section id="donorsTab" class="tab-panel">
+              <div class="panel glass">
+                <div class="row space-between align-center wrap gap-12 mb-16">
+                  <h3>Donor Directory</h3>
+                  <form id="donorFilterForm" class="row wrap gap-12">
+                    <select name="bloodGroup" class="input blood-group-select"></select>
+                    <input class="input" name="city" placeholder="Filter by city" />
+                    <label class="check-wrap">
+                      <input type="checkbox" name="onlyAvailable" /> Available only
+                    </label>
+                    <button class="btn btn-primary" type="submit">Apply</button>
+                  </form>
+                </div>
+                <div id="donorGrid" class="cards-grid"></div>
+              </div>
+            </section>
+
+            <section id="requestsTab" class="tab-panel">
+              <div class="dashboard-grid-2">
+                <div class="panel glass request-form-wrap hospital-only bank-only admin-only-any">
+                  <h3>Create Blood Request</h3>
+                  <form id="requestForm" class="form-grid two-col mt-16">
+                    <input class="input" name="patientName" placeholder="Patient name" required />
+                    <select name="bloodGroup" class="input blood-group-select" required></select>
+                    <input class="input" name="units" type="number" min="1" placeholder="Units" required />
+                    <input class="input" name="hospital" placeholder="Hospital / organization" required />
+                    <input class="input" name="city" placeholder="City" required />
+                    <select name="priority" class="input">
+                      <option>Normal</option>
+                      <option>Urgent</option>
+                      <option>Critical</option>
+                    </select>
+                    <input class="input" name="contactName" placeholder="Contact person" />
+                    <input class="input" name="contactPhone" placeholder="Contact phone" />
+                    <textarea class="input col-span-2" name="notes" rows="4" placeholder="Clinical notes or pickup instructions"></textarea>
+                    <button class="btn btn-primary col-span-2" type="submit">Create request</button>
+                  </form>
+                </div>
+                <div class="panel glass">
+                  <div class="row space-between align-center wrap gap-12 mb-16">
+                    <h3>Request Board</h3>
+                    <form id="requestFilterForm" class="row wrap gap-12">
+                      <select name="bloodGroup" class="input blood-group-select"></select>
+                      <input class="input" name="city" placeholder="City" />
+                      <select class="input" name="status">
+                        <option value="">All status</option>
+                        <option>Open</option>
+                        <option>Processing</option>
+                        <option>Fulfilled</option>
+                        <option>Cancelled</option>
+                      </select>
+                      <button class="btn btn-soft" type="submit">Filter</button>
+                    </form>
+                  </div>
+                  <div id="requestBoard" class="request-board"></div>
+                </div>
+              </div>
+            </section>
+
+            <section id="appointmentsTab" class="tab-panel">
+              <div class="dashboard-grid-2">
+                <div class="panel glass">
+                  <h3>Appointments</h3>
+                  <div id="appointmentBoard" class="request-board mt-16"></div>
+                </div>
+                <div class="panel glass hospital-only bank-only admin-only-any">
+                  <h3>Schedule Donor Visit</h3>
+                  <form id="appointmentForm" class="form-grid mt-16">
+                    <input class="input" name="requestId" placeholder="Request ID" required />
+                    <input class="input" name="donorId" placeholder="Donor ID" required />
+                    <input class="input" name="scheduledAt" type="datetime-local" required />
+                    <input class="input" name="location" placeholder="Location" required />
+                    <textarea class="input col-span-2" name="note" rows="4" placeholder="Appointment note"></textarea>
+                    <button class="btn btn-primary col-span-2" type="submit">Schedule appointment</button>
+                  </form>
+                </div>
+              </div>
+            </section>
+
+            <section id="inventoryTab" class="tab-panel">
+              <div class="dashboard-grid-2">
+                <div class="panel glass">
+                  <div class="row space-between align-center wrap gap-12 mb-16">
+                    <h3>Blood Inventory</h3>
+                    <form id="inventoryFilterForm" class="row wrap gap-12">
+                      <input class="input" name="city" placeholder="Filter by city" />
+                      <button class="btn btn-soft" type="submit">Refresh</button>
+                    </form>
+                  </div>
+                  <div id="inventoryBoard" class="cards-grid compact"></div>
+                </div>
+                <div class="panel glass bank-only admin-only-any">
+                  <h3>Update Inventory</h3>
+                  <form id="inventoryForm" class="form-grid mt-16">
+                    <select name="bloodGroup" class="input blood-group-select" required></select>
+                    <input class="input" name="units" type="number" min="0" placeholder="Units" required />
+                    <input class="input col-span-2" name="city" placeholder="City" required />
+                    <button class="btn btn-primary col-span-2" type="submit">Save inventory</button>
+                  </form>
+                </div>
+              </div>
+            </section>
+
+            <section id="campaignsTab" class="tab-panel">
+              <div class="dashboard-grid-2">
+                <div class="panel glass">
+                  <h3>Campaigns</h3>
+                  <div id="campaignBoardApp" class="cards-grid mt-16"></div>
+                </div>
+                <div class="panel glass bank-only admin-only-any">
+                  <h3>Create Campaign</h3>
+                  <form id="campaignForm" class="form-grid mt-16">
+                    <input class="input" name="title" placeholder="Campaign title" required />
+                    <input class="input" name="city" placeholder="City" required />
+                    <input class="input" name="venue" placeholder="Venue" required />
+                    <input class="input" name="date" type="date" required />
+                    <input class="input" name="seats" type="number" min="1" placeholder="Seats" />
+                    <input class="input" name="organizer" placeholder="Organizer" />
+                    <textarea class="input col-span-2" name="description" rows="4" placeholder="Campaign description"></textarea>
+                    <button class="btn btn-primary col-span-2" type="submit">Create campaign</button>
+                  </form>
+                </div>
+              </div>
+            </section>
+
+            <section id="adminTab" class="tab-panel admin-only">
+              <div class="dashboard-grid-2">
+                <div class="panel glass">
+                  <h3>Admin User Control</h3>
+                  <div id="adminUserBoard" class="cards-grid compact mt-16"></div>
+                </div>
+                <div class="panel glass">
+                  <h3>Platform Activity</h3>
+                  <div id="adminActivityBoard" class="feed-list mt-16"></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="authModal" class="modal hidden">
+      <div class="modal-card glass">
+        <button id="closeAuthModal" class="modal-close">×</button>
+        <div class="auth-tabs row gap-12 mb-16">
+          <button id="loginTabBtn" class="btn btn-soft active">Login</button>
+          <button id="registerTabBtn" class="btn btn-soft">Register</button>
+        </div>
+
+        <form id="loginForm" class="stack gap-12">
+          <h3>Login to your workspace</h3>
+          <input class="input" name="email" type="email" placeholder="Email" required />
+          <input class="input" name="password" type="password" placeholder="Password" required />
+          <button class="btn btn-primary" type="submit">Login</button>
+        </form>
+
+        <form id="registerForm" class="stack gap-12 hidden">
+          <h3>Create account</h3>
+          <input class="input" name="name" placeholder="Full name" required />
+          <input class="input" name="email" type="email" placeholder="Email" required />
+          <input class="input" name="password" type="password" placeholder="Password" required />
+          <select class="input" name="role" required>
+            <option value="donor">Donor</option>
+            <option value="hospital">Hospital</option>
+            <option value="bloodbank">Blood Bank</option>
+          </select>
+          <select class="input blood-group-select" name="bloodGroup" required></select>
+          <input class="input" name="city" placeholder="City" required />
+          <input class="input" name="phone" placeholder="Phone" />
+          <input class="input" name="organization" placeholder="Organization (optional)" />
+          <input class="input" name="lastDonation" type="date" />
+          <button class="btn btn-primary" type="submit">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="toastRoot" class="toast-root"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/app.js"></script>
+  </body>
+</html>

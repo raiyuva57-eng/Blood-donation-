@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patients — LifeDrop</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" fill="#c41e3a" stroke="#c41e3a"/></svg>
+      LifeDrop
+    </a>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="community.html">Community</a>
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <a class="nav-link" href="donor-history.html">Donor History</a>
+      <a class="nav-link" href="patient.html">Patients</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">Sign in</a></span>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div class="hero-eyebrow">Patient blood need</div>
+  <h1 style="font-size: 34px;">Register a patient</h1>
+  <p class="hero-sub">Add a patient's blood need so it's visible to nearby donors. Mark it urgent if it can't wait.</p>
+
+  <div class="grid-2 section-tight" style="align-items: start;">
+    <div class="card">
+      <div id="formBanner"></div>
+      <form id="patientForm" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="patientName">Patient name</label>
+            <input type="text" id="patientName" required placeholder="Jamie Patient">
+          </div>
+          <div class="field">
+            <label for="patientBloodType">Blood type needed</label>
+            <select id="patientBloodType" required>
+              <option value="">Select…</option>
+              <option>O+</option><option>O-</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="unitsNeeded">Units needed</label>
+            <input type="number" id="unitsNeeded" min="1" max="10" value="1" required>
+          </div>
+          <div class="field">
+            <label for="urgency">Urgency</label>
+            <select id="urgency">
+              <option value="normal">Normal</option>
+              <option value="urgent">Urgent</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="contactPhone">Contact phone number</label>
+            <input type="tel" id="contactPhone" required placeholder="(555) 123-4567" pattern="[0-9\-\+\(\)\s]{7,20}">
+          </div>
+          <div class="field">
+            <label for="hospital">Hospital / location</label>
+            <input type="text" id="hospital" placeholder="Springfield General">
+          </div>
+        </div>
+        <div class="field">
+          <label for="reason">Reason / notes (optional)</label>
+          <textarea id="reason" rows="3" placeholder="Any details that help donors understand the need…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Register patient need</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 20px; background: var(--crimson-wash); border-color: transparent;">
+        <div class="emergency-banner" style="margin-bottom: 10px;">
+          <span class="emergency-heart"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-4.9-9.3-8.6C.6 9.2 1.6 5.3 5 4.1c2-.7 4 .1 5 1.8 1-1.7 3-2.5 5-1.8 3.4 1.2 4.4 5.1 2.3 8.3C18.7 16.1 12 21 12 21z"/></svg></span>
+          Emergency
+        </div>
+        <h3 style="font-size: 16px; color: var(--crimson-deep);">Critical need?</h3>
+        <p style="font-size: 13.5px; margin: 0; color: var(--crimson-deep);">If this is a life-threatening emergency, call your local emergency number first. This form helps coordinate donors — it doesn't replace emergency care.</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size: 16px;">How matching works</h3>
+        <p style="font-size: 13.5px;">Once registered, the patient's need appears in the list below. Donors with a compatible blood type can see it and reach out using the contact number provided.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section-tight">
+    <div class="card">
+      <div class="flex-between" style="margin-bottom: 4px;">
+        <h3 style="margin: 0;">Registered needs</h3>
+        <input type="search" id="searchBox" placeholder="Search by name or blood type…" style="max-width: 260px; padding: 9px 12px; border: 1.5px solid var(--line-strong); border-radius: 8px; font-family: var(--font-body); font-size: 14px;">
+      </div>
+      <div id="patientList"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer wrap">
+  <span>© 2026 LifeDrop. A community blood donation network.</span>
+  <span><a href="donor-history.html">View donor history</a></span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/chatbot-data.js"></script>
+<script src="js/chatbot-widget.js"></script>
+<script>
+  (function() {
+    const session = LifeDropAuth.getSession();
+    const slot = document.getElementById('navAuth');
+    if (session && slot) {
+      slot.innerHTML = '<span style="font-size:13px;color:var(--clay);margin-right:8px;">' + session.fullName.split(' ')[0] + '</span><button class="btn btn-ghost btn-sm" onclick="LifeDropAuth.logout(); window.location.reload();">Sign out</button>';
+    }
+  })();
+</script>
+<script>
+  const form = document.getElementById('patientForm');
+  const banner = document.getElementById('formBanner');
+  const searchBox = document.getElementById('searchBox');
+
+  function urgencyBadge(level) {
+    const map = {
+      normal: { bg: 'var(--sage-wash)', color: 'var(--sage)', label: 'Normal' },
+      urgent: { bg: 'var(--amber-wash)', color: 'var(--amber)', label: 'Urgent' },
+      critical: { bg: 'var(--crimson-wash)', color: 'var(--crimson-deep)', label: 'Critical' },
+    };
+    const s = map[level] || map.normal;
+    const heart = level === 'critical'
+      ? `<span class="emergency-heart"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-4.9-9.3-8.6C.6 9.2 1.6 5.3 5 4.1c2-.7 4 .1 5 1.8 1-1.7 3-2.5 5-1.8 3.4 1.2 4.4 5.1 2.3 8.3C18.7 16.1 12 21 12 21z"/></svg></span>`
+      : '';
+    return `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:${s.bg};color:${s.color};font-size:12.5px;font-weight:600;">${heart}${s.label}</span>`;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const record = {
+      name: document.getElementById('patientName').value.trim(),
+      bloodType: document.getElementById('patientBloodType').value,
+      units: Number(document.getElementById('unitsNeeded').value),
+      urgency: document.getElementById('urgency').value,
+      phone: document.getElementById('contactPhone').value.trim(),
+      hospital: document.getElementById('hospital').value.trim(),
+      reason: document.getElementById('reason').value.trim(),
+    };
+    LifeDropData.addPatient(record);
+    banner.innerHTML = `<div class="form-banner success">Patient need registered and visible to donors below.</div>`;
+    form.reset();
+    renderList();
+  });
+
+  function renderList() {
+    const query = searchBox.value.trim().toLowerCase();
+    let patients = LifeDropData.getPatients();
+    if (query) {
+      patients = patients.filter((p) =>
+        (p.name || '').toLowerCase().includes(query) ||
+        (p.bloodType || '').toLowerCase().includes(query)
+      );
+    }
+
+    const list = document.getElementById('patientList');
+    if (!patients.length) {
+      list.innerHTML = `<div class="empty-state"><h3>No patient needs registered yet</h3><p>Use the form above to add one.</p></div>`;
+      return;
+    }
+
+    list.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Patient</th><th>Type</th><th>Units</th><th>Urgency</th><th>Hospital</th><th>Contact</th><th></th></tr></thead>
+          <tbody>
+            ${patients.map((p) => `
+              <tr>
+                <td>${escapeHtml(p.name)}</td>
+                <td>${bloodTypeBadge(p.bloodType)}</td>
+                <td>${p.units ?? 1}</td>
+                <td>${urgencyBadge(p.urgency)}</td>
+                <td>${escapeHtml(p.hospital || '—')}</td>
+                <td class="mono" style="font-size:13px;">${escapeHtml(p.phone || '—')}</td>
+                <td><button class="btn btn-ghost btn-sm" onclick="removePatient('${p.id}')">Remove</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function removePatient(id) {
+    if (!confirm('Remove this patient record?')) return;
+    LifeDropData.deletePatient(id);
+    renderList();
+  }
+
+  searchBox.addEventListener('input', renderList);
+  renderList();
+</script>
+<script>
+  const themeToggleBtn = document.getElementById('themeToggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => LifeDropTheme.toggle());
+  }
+</script>
+</body>
+</html>

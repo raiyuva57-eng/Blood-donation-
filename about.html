@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — LifeDrop</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" fill="#c41e3a" stroke="#c41e3a"/></svg>
+      LifeDrop
+    </a>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="community.html">Community</a>
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <a class="nav-link" href="donor-history.html">Donor History</a>
+      <a class="nav-link" href="patient.html">Patients</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">Sign in</a></span>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div class="hero-eyebrow">Our story</div>
+  <h1 style="font-size: 42px; max-width: 640px;">Built by people who've waited for the phone to ring.</h1>
+  <p class="hero-sub" style="font-size: 17px;">LifeDrop started as a spreadsheet a hospital volunteer kept to track which donors were eligible each week. We turned it into something anyone can use.</p>
+
+  <div class="grid-2 section-tight">
+    <div class="card">
+      <h3>What we do</h3>
+      <p>LifeDrop keeps donor histories, patient blood needs, and eligibility windows in one place, so no one has to remember who gave last, or when they're due again.</p>
+    </div>
+    <div class="card">
+      <h3>Who it's for</h3>
+      <p>Community blood drives, small clinics, and local donor networks who need something simple, fast, and free of paperwork — not a hospital-scale system.</p>
+    </div>
+  </div>
+
+  <section class="section-tight">
+    <div class="section-head">
+      <span class="eyebrow">By the numbers</span>
+      <h2 style="font-size: 28px;">Why donation timing matters</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card text-center">
+        <div class="mono" style="font-size: 36px; font-weight: 600; color: var(--crimson);">56</div>
+        <p style="font-size: 14px; margin: 0;">days between whole blood donations</p>
+      </div>
+      <div class="card text-center">
+        <div class="mono" style="font-size: 36px; font-weight: 600; color: var(--crimson);">3</div>
+        <p style="font-size: 14px; margin: 0;">patients one donation can help</p>
+      </div>
+      <div class="card text-center">
+        <div class="mono" style="font-size: 36px; font-weight: 600; color: var(--crimson);">42</div>
+        <p style="font-size: 14px; margin: 0;">days a donated unit stays usable</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="card" style="text-align: center; padding: 44px 32px;">
+      <h2 style="font-size: 24px;">Have a question we didn't answer?</h2>
+      <p style="max-width: 480px; margin: 0 auto 20px;">We'd genuinely like to hear it — reach out and a real person will get back to you.</p>
+      <a href="contact.html" class="btn btn-primary">Get in touch</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer wrap">
+  <span>© 2026 LifeDrop. A community blood donation network.</span>
+  <span><a href="contact.html">Contact us</a></span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/chatbot-data.js"></script>
+<script src="js/chatbot-widget.js"></script>
+<script>
+  (function() {
+    const session = LifeDropAuth.getSession();
+    const slot = document.getElementById('navAuth');
+    if (session && slot) {
+      slot.innerHTML = '<span style="font-size:13px;color:var(--clay);margin-right:8px;">' + session.fullName.split(' ')[0] + '</span><button class="btn btn-ghost btn-sm" onclick="LifeDropAuth.logout(); window.location.reload();">Sign out</button>';
+    }
+  })();
+</script>
+<script>
+  const themeToggleBtn = document.getElementById('themeToggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => LifeDropTheme.toggle());
+  }
+</script>
+</body>
+</html>
