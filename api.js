@@ -13,7 +13,7 @@ const {
   calculateStats,
   matchDonors,
   bloodCompatibility
-} = require('../data/store');
+} = require('./store');
 
 function createApi(realtime) {
   const router = express.Router();
