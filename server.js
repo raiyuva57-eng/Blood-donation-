@@ -2,7 +2,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
-const createApi = require('./routes/api');
+const createApi = require('./api');
 const createRealtime = require('./sockets/realtime');
 
 const app = express();
